@@ -21,6 +21,7 @@ pipeline {
                         label 'agent1'
                     }
                     steps {
+						sleep 2
                         unstash 'source-code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             bat '''
