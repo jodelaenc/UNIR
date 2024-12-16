@@ -25,7 +25,7 @@ pipeline {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             bat '''
                                 set PYTHONPATH=%WORKSPACE%
-                                pytest --junitxml=result-unit.xml test\unit
+                                pytest --junitxml=result-unit.xml test\\unit
                             '''
                         }
                         stash includes: 'result-unit.xml', name: 'unit-test-results'
@@ -39,11 +39,11 @@ pipeline {
                         unstash 'source-code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             bat '''
-                                set FLASK_APP=app\api.py
+                                set FLASK_APP=app\\api.py
                                 start flask run
-                                start java -jar C:\Users\jodel\Desktop\UNIR\Practicas\CP1\wiremock-standalone-3.10.0.jar --port 9090 --root-dir C:\Users\jodel\Desktop\UNIR\Practicas\CP1\Project\helloworld\test\wiremock
+                                start java -jar C:\\Users\\jodel\\Desktop\\UNIR\\Practicas\\CP1\\wiremock-standalone-3.10.0.jar --port 9090 --root-dir C:\\Users\\jodel\\Desktop\\UNIR\\Practicas\\CP1\\Project\\helloworld\\test\\wiremock
                                 set PYTHONPATH=%WORKSPACE%
-                                pytest --junitxml=result-rest.xml test\rest
+                                pytest --junitxml=result-rest.xml test\\rest
                             '''
                         }
                         stash includes: 'result-rest.xml', name: 'rest-test-results'
