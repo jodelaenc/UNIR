@@ -1,6 +1,7 @@
 import http.client
 import os
 import unittest
+import urllib.error
 from urllib.request import urlopen
 
 import pytest
@@ -36,7 +37,7 @@ class TestApi(unittest.TestCase):
         )
     
     def test_api_multiply(self):
-        url = f"{BASE_URL}/calc/multply/1/2"
+        url = f"{BASE_URL}/calc/multiply/1/2"
         response = urlopen(url, timeout=DEFAULT_TIMEOUT)
         self.assertEqual(
             response.status, http.client.OK, f"Error en la petición API a {url}"
@@ -52,15 +53,24 @@ class TestApi(unittest.TestCase):
             response.status, http.client.OK, f"Error en la petición API a {url}"
         )
         self.assertEqual(
-            response.read().decode(), "3", "ERROR DIVIDE"
+            response.read().decode(), "3.0", "ERROR DIVIDE"
         )
     
-    def test_api_divide_zro(self):
+    def test_api_divide_zero(self):
         url = f"{BASE_URL}/calc/divide/6/0"
-        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
-        self.assertEqual(
-            response.status, http.client.NOT_ACCEPTABLE, f"Error en la petición API a {url}"
-        )
+        try:
+            response = urlopen(url, timeout=DEFAULT_TIMEOUT)
+        except urllib.error.HTTPError as e:
+            # Verificamos que el código de estado sea 406 (Not Acceptable)
+            self.assertEqual(
+                e.code, http.client.NOT_ACCEPTABLE, f"Error en la petición API a {url}"
+            )
+            # Verificamos que el mensaje de error sea el esperado
+            self.assertEqual(
+                e.read().decode(), "Division by zero is not allowed", "ERROR DIVIDE BY ZERO"
+            )
+        else:
+            self.fail(f"La API no devolvió el error esperado 406 para la URL {url}")
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()
