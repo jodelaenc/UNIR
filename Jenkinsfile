@@ -28,10 +28,10 @@ pipeline {
                             sh '''
 			        ls -la
                                 export PYTHONPATH=${WORKSPACE}
-                                home/agent1/.local/bin/pytest --junitxml=result-unit.xml test/unit
+                                /home/agent1/.local/bin/pytest --junitxml=result-unit.xml test/unit
                             '''
+			    stash includes: 'result-unit.xml', name: 'unit-test-results'
                         }
-                        stash includes: 'result-unit.xml', name: 'unit-test-results'
                     }
                 }
                 stage('Rest') {
@@ -42,12 +42,13 @@ pipeline {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
 			    unstash 'source-code'
                             sh '''
-                                export FLASK_APP=app\\api.py
-                                home/agent2/.local/bin/flask run & sleep 4
+                                export FLASK_APP=app/api.py
+                                home/agent2/.local/bin/flask run & 
+				sleep 4
                                 java -jar /home/agent2/wiremock/wiremock-standalone-3.10.0.jar --port 9090 --root-dir /home/agent2/wiremock &  
                                 export PYTHONPATH=${WORKSPACE}
 				sleep 15
-                                home/agent2/.local/bin/pytest --junitxml=result-rest.xml test/rest
+                                /home/agent2/.local/bin/pytest --junitxml=result-rest.xml test/rest
                             '''
                         }
                         stash includes: 'result-rest.xml', name: 'rest-test-results'
