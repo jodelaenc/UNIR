@@ -39,7 +39,7 @@ pipeline {
                         label 'agent2'
                     }
                     steps {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') 
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
 			    unstash 'source-code'
                             sh '''
                                 export FLASK_APP=app\\api.py
